@@ -1,0 +1,104 @@
+<script>
+    var googleMap = {
+        show:function(){
+            console.log('开始渲染谷歌地图');
+        }
+    };
+    var baiduMap = {
+        show:function(){
+            console.log('开始渲染百度地图');
+        }
+    };
+    var renderMap = function(map){
+        if(map.show instanceof Function){
+            map.show();
+        }
+    };
+    renderMap(googleMap);
+    renderMap(baiduMap);
+</script>
+<script>
+    var googleMap1 = {
+        show:function(){
+            console.log('开始渲染谷歌地图');
+        }
+    };
+    var baiduMap1 = {
+        display:function(){
+            console.log('开始渲染百度地图');
+        }
+    };
+    var baiduMapAdapter = {
+        show:function(){
+            return baiduMap1.display();
+        }
+    };
+    var renderMap = function(map){
+        if(map.show instanceof Function){
+            map.show();
+        }
+    };
+    renderMap(googleMap1);
+    renderMap(baiduMapAdapter);
+
+</script>
+
+<script>
+    var getGuangdongCity = function(){
+        var guangdongCity = [{
+            name:'shenzhen',
+            id:11
+        },{
+            name:'guangzhou',
+            id:12
+        }];
+        return guangdongCity;
+    }
+
+    var renderCity = function(fn){
+        console.log('开始渲染广东地图');
+        document.write(JSON.stringify(fn()));
+    }
+
+    renderCity(getGuangdongCity);
+</script>
+
+<script>
+    var guangdongCity1 = {
+        shenzhen:11,
+        guangzhou:12,
+        zhuhai:13
+    };
+
+    var getGuangdongCity = function(){
+        var guangdongCity = [
+            {
+                name: 'shenzhen',
+                id: 11,
+            }, {
+                name: 'guangzhou',
+                id: 12,
+            }
+
+        ];
+        return guangdongCity;
+    };
+
+    var render = function(fn){
+        console.log('开始渲染广东地图');
+        document.write(JSON.stringify(fn()));
+    }
+
+    var addressAapter = function(oldAddressfn){
+        var address = {},
+        oldAddress = oldAddressfn();
+        for(var i = 0,c;c = oldAddress[i++];){
+            address[c.name] = c.id;
+        }
+        return function(){
+            return address;
+        }
+    }
+
+    render(addressAapter(getGuangdongCity));
+</script>
