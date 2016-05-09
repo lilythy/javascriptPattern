@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<script type="text/javascript">
+    var Light = function(){
+        this.state = 'off'; // 给电灯设置初始状态off
+        this.button = null; // 电灯开关按钮
+    };
+
+    Light.prototype.init = function(){
+        var button = document.createElement( 'button' ),
+                self = this;
+        button.innerHTML = '开关';
+        this.button = document.body.appendChild( button );
+        this.button.onclick = function(){
+            self.buttonWasPressed();
+        }
+    };
+
+    Light.prototype.buttonWasPressed = function(){
+        if ( this.state === 'off' ){
+            console.log( '开灯' );
+            this.state = 'on';
+        }else if ( this.state === 'on' ){
+            console.log( '关灯' );
+            this.state = 'off';
+        }
+    };
+
+    var light = new Light();
+    light.init();
+
+    Light.prototype.buttonWasPressed = function(){
+        if ( this.state === 'off' ){
+            console.log( '弱光' );
+            this.state = 'weakLight';
+        }else if ( this.state === 'weakLight' ){
+            console.log( '强光' );
+            this.state = 'strongLight';
+        }else if ( this.state === 'strongLight' ){
+            console.log( '关灯' );
+            this.state = 'off';
+        }
+    };
+
+
+    //将每个状态写成一个对象
+    //OffLightState
+    var OffLightState = function(light){
+        this.light = light;
+    };
+    OffLightState.prototype.buttonWasPressed = function(){
+        console.log("弱光");                              // offLightState 对应的行为
+        this.light.setState(this.light.weakLightState);   // 切换状态到weakLightState
+    };
+
+    //WeakLightState
+    var WeakLightState = function(light){
+        this.light = light;
+    };
+    WeakLightState.prototype.buttonWasPressed = function(){
+        console.log("强光");                               // weakLightState 对应的行为
+        this.light.setState(this.light.strongLightState);  // 切换状态到strongLightState
+    };
+
+    //StrongLightState
+    var StrongLightState = function(light){
+        this.light = light;
+    }
+    StrongLightState.prototype.buttonWasPressed = function(){
+        console.log("关灯");                                // strongLightState 对应的行为
+        this.light.setState(this.light.offLightState);      // 切换状态到offLightState
+    }
+
+    var Light = function(){
+        this.offLightState = new OffLightState(this);
+        this.weakLightState = new WeakLightState(this);
+        this.strongLightState = new StrongLightState(this);
+        this.button = null;
+    }
+
+    Light.prototype.init = function(){
+        var button = document.createElement('button'),
+            self = this;
+        this.button = document.body.appendChild(button);
+        this.button.innerHTML = "开关";
+        this.currState = this.offLightState;          // 设置当前状态
+        this.button.onclick = function(){
+            self.currState.buttonWasPressed();
+        }
+    };
+
+    Light.prototype.setState = function(newState){
+        this.currState = newState;
+    }
+
+    var light = new Light();
+    light.init();
+
+    /********这时如果要加一个“超强光”状态，则不必修改函数内部，只需增加一个对象即可*********/
+
+    //如果SuperStrongLightState有一个父类State，且State的buttonWasPressed方法为空，则子类必须复写此方法
+    var State = function(){};
+    State.prototype.buttonWasPressed = function(){
+        throw new Error('父类的buttonWasPressed 方法必须被重写');
+    }
+    var SuperStrongLightState = function(light){
+        this.light = light;
+    };
+    SuperStrongLightState.prototype = new State();
+    SuperStrongLightState.prototype.buttonWasPressed = function(){
+        console.log('关灯');
+        this.light.setState(this.light.offLightState);
+    }
+
+    // StrongLightState：
+    var StrongLightState = function( light ){
+        this.light = light;
+    };
+
+    StrongLightState.prototype.buttonWasPressed = function(){
+        console.log( '关灯' ); // strongLightState 对应的行为
+        this.light.setState( this.light.superStrongLightState ); // 切换状态到offLightState
+    };
+
+    var Light = function(){
+        this.offLightState = new OffLightState( this ); // 持有状态对象的引用
+        this.weakLightState = new WeakLightState( this );
+        this.strongLightState = new StrongLightState( this );
+        this.superStrongLightState = new SuperStrongLightState( this );
+        this.button = null;
+    };
+    Light.prototype.init = function(){
+        var button = document.createElement( 'button' ),
+                self = this;
+        this.button = document.body.appendChild( button );
+        this.button.innerHTML = '开关';
+        this.currState = this.offLightState; // 设置默认初始状态
+        this.button.onclick = function(){ // 定义用户的请求动作
+            self.currState.buttonWasPressed();
+        }
+    };
+
+    var light = new Light();
+    console.log('加入超强光状态/n');
+    light.init();
+</script>
+</body>
+</html>
